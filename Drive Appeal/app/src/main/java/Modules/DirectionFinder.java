@@ -19,9 +19,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Mai Thanh Hiep on 4/3/2016.
- */
+
 public class DirectionFinder {
     private static final String DIRECTION_URL_API = "https://maps.googleapis.com/maps/api/directions/json?";
     private static final String GOOGLE_API_KEY = "AIzaSyDnwLF2-WfK8cVZt9OoDYJ9Y8kspXhEHfI";
@@ -29,6 +27,7 @@ public class DirectionFinder {
     private String origin;
     private String destination;
 
+    public String NavDir;
     public DirectionFinder(DirectionFinderListener listener, String origin, String destination) {
         this.listener = listener;
         this.origin = origin;
@@ -101,7 +100,16 @@ public class DirectionFinder {
             JSONObject jsonDuration = jsonLeg.getJSONObject("duration");
             JSONObject jsonEndLocation = jsonLeg.getJSONObject("end_location");
             JSONObject jsonStartLocation = jsonLeg.getJSONObject("start_location");
+            JSONArray jsonSteps = jsonLeg.getJSONArray("steps");
+            List<String> direct = new ArrayList<String>();
+            for (int b = 0; b < jsonSteps.length(); b++) {
+                JSONObject Step = jsonSteps.getJSONObject(b);
+                direct.add(Step.getString("html_instructions"));
 
+            }
+            route.directions = direct;
+           //JSONObject direction = jsonLeg.getJSONObject("html_instructions");
+           // route.directions = direction.getString("text");
             route.distance = new Distance(jsonDistance.getString("text"), jsonDistance.getInt("value"));
             route.duration = new Duration(jsonDuration.getString("text"), jsonDuration.getInt("value"));
             route.endAddress = jsonLeg.getString("end_address");

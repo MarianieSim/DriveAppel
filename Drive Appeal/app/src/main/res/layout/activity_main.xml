@@ -24,7 +24,8 @@
 
         <ImageButton
             android:id="@+id/sign"
-            android:layout_width="match_parent"
+            android:layout_width="900dp"
+            android:layout_gravity="center_vertical|center_horizontal"
             android:layout_height="wrap_content"
             android:background="@android:color/background_light"
             app:srcCompat="@drawable/signin" />

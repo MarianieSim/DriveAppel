@@ -18,7 +18,7 @@
         android:text="Current Location"
         android:textAllCaps="false"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-        android:textColor="#cd0f0f"
+        android:textColor="#d50f25"
         android:textSize="24sp" />
 
     <Button
@@ -30,50 +30,97 @@
         android:paddingLeft="5dip"
         android:text="Search Destination..."
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-        android:textColor="#cd0f0f"
+        android:textColor="#d50f25"
         android:textSize="24sp"
         android:typeface="normal" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
+
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Find path"
             android:id="@+id/btnFindPath"
-            android:background="#cd0f0f"
-            android:textColor="@android:color/background_light"/>
-        <ImageView
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="5dp"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/ic_distance"/>
-        <TextView
-            android:layout_marginLeft="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0 km"
-            android:id="@+id/tvDistance" />
+            android:background="#d50f25"
+            android:text="Find path"
+            android:textColor="@android:color/background_light" />
 
         <ImageView
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="5dp"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:padding="5dp"
-            android:src="@drawable/ic_clock"/>
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="5dp"
+            android:src="@drawable/ic_distance" />
+
         <TextView
-            android:layout_marginLeft="5dp"
+            android:id="@+id/tvDistance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0 min"
-            android:id="@+id/tvDuration" />
+            android:layout_marginLeft="5dp"
+            android:text="0 km" />
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="5dp"
+            android:padding="5dp"
+            android:src="@drawable/ic_clock" />
+
+        <TextView
+            android:id="@+id/tvDuration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="0 min" />
+
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnNav"
+            android:layout_width="168dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="#d50f25"
+            android:text="Start Navigation"
+            android:textColor="@android:color/background_light" />
+
+        <Button
+            android:id="@+id/btnDir"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@android:color/background_light"
+            android:text="See Directions"
+            android:textColor="#d50f25" />
+
+
+    </LinearLayout>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/textDir"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="30sp" />
+        </LinearLayout>
+    </ScrollView>
 
     <fragment
         android:id="@+id/map"

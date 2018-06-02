@@ -13,6 +13,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.provider.Settings;
+import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -76,15 +77,18 @@ import java.util.Locale;
 
 import Modules.DirectionFinder;
 import Modules.DirectionFinderListener;
+import Modules.DirectionString;
 import Modules.Route;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, DirectionFinderListener {
 
+    TextToSpeech t1;
     private GoogleMap mMap;
     private static final int REQUEST_LOCATION = 1;
     private Button btnFindPath;
     private EditText etOrigin;
     private EditText etDestination;
+    private TextView textDir;
     private List<Marker> originMarkers = new ArrayList<>();
     private List<Marker> destinationMarkers = new ArrayList<>();
     private List<Polyline> polylinePaths = new ArrayList<>();
@@ -96,9 +100,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private double lat;
     private double lan;
     LatLng latLngSource,latLngDestination;
-    Button e1_source,e2_destination;
+    Button e1_source,e2_destination, Nav, Dir;
     Marker sourceMarker,destinationMarker;
     Boolean CL;
+    String text;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,11 +126,61 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             getLocation();
         }
         btnFindPath = (Button) findViewById(R.id.btnFindPath);
-
+        Nav= (Button)findViewById(R.id.btnNav);
+        Dir= (Button)findViewById(R.id.btnDir);
+        textDir= (TextView)findViewById(R.id.textDir);
+        textDir.setText("");
+        Nav.setVisibility(View.INVISIBLE);
+        Dir.setVisibility(View.INVISIBLE);
         btnFindPath.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
+                Nav.setVisibility(View.VISIBLE);
+                Dir.setVisibility(View.VISIBLE);
+                btnFindPath.setVisibility(View.INVISIBLE);
                 sendRequest();
+            }
+        });
+        t1 = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status!=TextToSpeech.ERROR)
+                {
+                    t1.setLanguage(Locale.ENGLISH);
+                }
+            }
+        });
+
+        Dir.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(Dir.getText().equals("See Directions")) {
+                    textDir.setText(text);
+                    Dir.setText("Close Directions");
+                }
+                else{
+                    textDir.setText("");
+                    Dir.setText("See Directions");
+                }
+            }
+        });
+        Nav.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(Nav.getText().equals("Start Navigation")) {
+                    Nav.setText("End Navigation");
+                    t1.speak(text, TextToSpeech.QUEUE_FLUSH,null);
+
+                }
+                else{
+                    t1.stop();
+                    Nav.setText("Start Navigation");
+                }
+
+
             }
         });
 
@@ -136,6 +191,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         e1_source.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Nav.setVisibility(View.INVISIBLE);
+                Dir.setVisibility(View.INVISIBLE);
+                btnFindPath.setVisibility(View.VISIBLE);
                 try {
                     Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY).build(MapsActivity.this);
                     startActivityForResult(intent,200);
@@ -150,6 +208,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         e2_destination.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Nav.setVisibility(View.INVISIBLE);
+                Dir.setVisibility(View.INVISIBLE);
+                btnFindPath.setVisibility(View.VISIBLE);
                 try {
 
                     Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY).build(MapsActivity.this);
@@ -346,7 +407,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         try {
             new DirectionFinder(this, origin, destination).execute();
-
+            new DirectionString(this, origin, destination).execute();
 
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -431,16 +492,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     }
-
+    public void onDirectionStringSuccess(String res) {
+     // text = res;
+    }
     @Override
     public void onDirectionFinderSuccess(List<Route> routes) {
         progressDialog.dismiss();
         polylinePaths = new ArrayList<>();
         originMarkers = new ArrayList<>();
         destinationMarkers = new ArrayList<>();
+        List<String> ldir = new ArrayList<String>();
 
         for (Route route : routes) {
-
+           ldir.add(route.directions.toString());
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(route.startLocation, 16));
             ((TextView) findViewById(R.id.tvDuration)).setText(route.duration.text);
             ((TextView) findViewById(R.id.tvDistance)).setText(route.distance.text);
@@ -464,6 +528,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             polylinePaths.add(mMap.addPolyline(polylineOptions));
         }
+
+        text = ldir.toString();
+        text = text.replace("</b>", "");
+        text = text.replace("<b>", "");
+        text = text.replace("<div style=", "");
+        text = text.replace("font-size:0.9em", "");
+        text = text.replace(">", "");
+        text = text.replace("</div", "");
+        text = text.replace("</div]]", "");
+        text = text.replace("[[", "");
+        text = text.replace("]", "");
+        text = text.replace("Destination w", "\n"+"\n"+"Destination w");
+        text = text.replace(",", "\n"+"\n");
     }
 
 
